@@ -18,4 +18,11 @@ public class AuthController {
         authService.register(request);
         return ResponseEntity.ok("Kullanıcı kaydı başarıyla oluşturuldu.");
     }
+
+    // ... register metodu bittikten sonra ...
+
+    @PostMapping("/login")
+    public ResponseEntity<com.supportbridge.backend.dto.AuthResponse> login(@RequestBody com.supportbridge.backend.dto.LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
+    }
 }
