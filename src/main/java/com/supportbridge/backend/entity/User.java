@@ -25,7 +25,10 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String fullName; // İsim Soyisim
+    private String firstName; // Ad
+
+    @Column(nullable = false)
+    private String lastName;  // Soyad
 
     private String phoneNumber; // Telefon Numarası
 
