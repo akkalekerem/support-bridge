@@ -39,4 +39,23 @@ public class EventService {
         // 3. Kaydet
         eventRepository.save(event);
     }
+    //-----------------------------------------------------------
+
+    // ETKİNLİK DURUMUNU GÜNCELLEME (Admin İçin)
+    public void updateEventStatus(Long eventId, EventStatus newStatus) {
+        // 1. Etkinliği bul
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Etkinlik bulunamadı!"));
+
+        // 2. Durumu değiştir (APPROVED veya REJECTED)
+        event.setStatus(newStatus);
+
+        // 3. Kaydet
+        eventRepository.save(event);
+    }
+
+    // ONAYLI ETKİNLİKLERİ GETİR (Gönüllüler İçin)
+    public java.util.List<Event> getAllApprovedEvents() {
+        return eventRepository.findByStatus(EventStatus.APPROVED);
+    }
 }

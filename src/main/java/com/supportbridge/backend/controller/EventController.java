@@ -20,4 +20,11 @@ public class EventController {
         eventService.createEvent(request);
         return ResponseEntity.ok("Etkinlik başarıyla oluşturuldu ve admin onayına gönderildi.");
     }
+
+    // ONAYLI ETKİNLİKLERİ LİSTELE (GET)
+    // Adres: http://localhost:8080/api/events
+    @GetMapping
+    public ResponseEntity<java.util.List<com.supportbridge.backend.entity.Event>> getAllEvents() {
+        return ResponseEntity.ok(eventService.getAllApprovedEvents());
+    }
 }
