@@ -47,4 +47,11 @@ public class AppointmentController {
         appointmentService.respondToAppointment(appointmentId, AppointmentStatus.REJECTED);
         return ResponseEntity.ok("Başvuru reddedildi.");
     }
+
+    // GÖNÜLLÜ BAŞVURULARINI LİSTELE (GET)
+    // URL: http://localhost:8080/api/appointments/volunteer/1
+    @GetMapping("/volunteer/{volunteerId}")
+    public ResponseEntity<List<Appointment>> getVolunteerAppointments(@PathVariable Long volunteerId) {
+        return ResponseEntity.ok(appointmentService.getAppointmentsForVolunteer(volunteerId));
+    }
 }

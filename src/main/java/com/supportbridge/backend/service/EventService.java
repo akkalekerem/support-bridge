@@ -7,6 +7,8 @@ import com.supportbridge.backend.repository.RequesterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class EventService {
@@ -57,5 +59,10 @@ public class EventService {
     // ONAYLI ETKİNLİKLERİ GETİR (Gönüllüler İçin)
     public java.util.List<Event> getAllApprovedEvents() {
         return eventRepository.findByStatus(EventStatus.APPROVED);
+    }
+
+    // ONAY BEKLEYEN ETKİNLİKLERİ GETİR (Admin İçin)
+    public List<Event> getPendingEvents() {
+        return eventRepository.findByStatus(EventStatus.PENDING);
     }
 }

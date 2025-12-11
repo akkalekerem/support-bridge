@@ -55,4 +55,9 @@ public class AppointmentService {
     public List<Appointment> getRequestsForEvent(Long eventId) {
         return appointmentRepository.findByEventId(eventId);
     }
+
+    // 4. GÖNÜLLÜNÜN KENDİ BAŞVURULARINI GETİR
+    public List<Appointment> getAppointmentsForVolunteer(Long volunteerId) {
+        return appointmentRepository.findByVolunteerId(volunteerId);
+    }
 }
