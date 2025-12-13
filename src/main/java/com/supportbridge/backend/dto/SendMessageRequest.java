@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class SendMessageRequest {
-    private Long appointmentId; // Hangi sohbet?
-    private Long senderId;      // Kim yazıyor?
+    private Long senderId;      // Mesajı atan kim?
+    private Long receiverId;    // Kime gidiyor?
+    private Long appointmentId; // Hangi randevunun sohbeti?
     private String content;     // Mesaj ne?
 }

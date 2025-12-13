@@ -11,4 +11,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     // Bir Talep Edenin kendi oluşturduğu etkinlikleri listelemesi için
     List<Event> findByRequesterId(Long requesterId);
+
+
 }

@@ -1,10 +1,13 @@
 package com.supportbridge.backend.controller;
 
 import com.supportbridge.backend.dto.SendMessageRequest;
+import com.supportbridge.backend.entity.Appointment;
 import com.supportbridge.backend.entity.Message;
-import com.supportbridge.backend.service.MessageService;
+import com.supportbridge.backend.entity.User;
+import com.supportbridge.backend.repository.AppointmentRepository;
+import com.supportbridge.backend.repository.MessageRepository;
+import com.supportbridge.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,22 +15,41 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/messages")
 @RequiredArgsConstructor
+@CrossOrigin
 public class MessageController {
 
-    private final MessageService messageService;
+    private final MessageRepository messageRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final UserRepository userRepository;
 
-    // MESAJ GÖNDER (POST)
-    // URL: http://localhost:8080/api/messages/send
-    @PostMapping("/send")
-    public ResponseEntity<String> sendMessage(@RequestBody SendMessageRequest request) {
-        messageService.sendMessage(request);
-        return ResponseEntity.ok("Mesaj gönderildi.");
+    @PostMapping
+    public Message sendMessage(@RequestBody SendMessageRequest request) {
+        // 1. Randevuyu Bul
+        Appointment appointment = appointmentRepository.findById(request.getAppointmentId())
+                .orElseThrow(() -> new RuntimeException("Randevu bulunamadı!"));
+
+        // 2. Gönderen Kişiyi Bul (User Nesnesi Lazım)
+        User sender = userRepository.findById(request.getSenderId())
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
+
+        // 3. Mesajı Hazırla
+        Message message = new Message();
+        message.setContent(request.getContent());
+        message.setSender(sender);          // Entity'de 'User sender' var
+        message.setAppointment(appointment); // Entity'de 'Appointment appointment' var
+
+        // setSentAt dememize gerek yok çünkü Entity içinde @PrePersist var.
+        // Veritabanına kaydedilirken otomatik şu anki zamanı basacak.
+        // Ama manuel vermek istersen: message.setSentAt(LocalDateTime.now());
+
+        // Receiver alanını sildik çünkü senin Entity'nde yok.
+
+        return messageRepository.save(message);
     }
 
-    // SOHBET GEÇMİŞİNİ GETİR (GET)
-    // URL: http://localhost:8080/api/messages/appointment/1
-    @GetMapping("/appointment/{appointmentId}")
-    public ResponseEntity<List<Message>> getChatHistory(@PathVariable Long appointmentId) {
-        return ResponseEntity.ok(messageService.getMessages(appointmentId));
+    @GetMapping("/{appointmentId}")
+    public List<Message> getMessages(@PathVariable Long appointmentId) {
+        // Yeni düzelttiğimiz Repository metodunu çağırıyoruz
+        return messageRepository.findByAppointmentIdOrderBySentAtAsc(appointmentId);
     }
 }
