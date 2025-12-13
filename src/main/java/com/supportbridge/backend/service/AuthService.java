@@ -1,8 +1,8 @@
 package com.supportbridge.backend.service;
 
-import com.supportbridge.backend.dto.AuthResponse; // Düzeltildi
-import com.supportbridge.backend.dto.RegisterRequest; // Düzeltildi
-import com.supportbridge.backend.dto.LoginRequest; // Düzeltildi
+import com.supportbridge.backend.dto.AuthResponse;
+import com.supportbridge.backend.dto.RegisterRequest;
+import com.supportbridge.backend.dto.LoginRequest;
 import com.supportbridge.backend.entity.*;
 import com.supportbridge.backend.repository.RequesterRepository;
 import com.supportbridge.backend.repository.UserRepository;
@@ -35,9 +35,19 @@ public class AuthService {
             volunteer.setPhoneNumber(request.getPhoneNumber());
             volunteer.setRole(Role.VOLUNTEER);
             volunteer.setExperienceNote(request.getExperienceNote());
+
             volunteerRepository.save(volunteer);
 
         } else if (request.getRole() == Role.REQUESTER) {
+
+            // 🔥🔥🔥 YENİ EKLENEN KONTROL BURASI 🔥🔥🔥
+            // Frontend'den gelen 'documentPath' içinde Google Drive linki var.
+            // Eğer boşsa veya null ise kayıt işlemini durduruyoruz.
+            if (request.getDocumentPath() == null || request.getDocumentPath().trim().isEmpty()) {
+                throw new RuntimeException("Talep edenlerin durum belgesi (Google Drive Linki) girmesi zorunludur!");
+            }
+            // 🔥🔥🔥 BİTİŞ 🔥🔥🔥
+
             Requester requester = new Requester();
             requester.setFirstName(request.getFirstName());
             requester.setLastName(request.getLastName());
@@ -45,8 +55,12 @@ public class AuthService {
             requester.setPassword(passwordEncoder.encode(request.getPassword()));
             requester.setPhoneNumber(request.getPhoneNumber());
             requester.setRole(Role.REQUESTER);
+
+            // Burada linki veritabanına kaydediyoruz
             requester.setDocumentPath(request.getDocumentPath());
+
             requester.setVerificationStatus(VerificationStatus.PENDING);
+
             requesterRepository.save(requester);
 
         } else {
@@ -66,14 +80,13 @@ public class AuthService {
         }
 
         // 3. Yanıtı hazırla
-        // Artık AuthResponse() boş constructor çalıştığı için hata vermeyecek
         AuthResponse response = new AuthResponse();
 
         response.setId(user.getId());
         response.setFirstName(user.getFirstName());
         response.setLastName(user.getLastName());
-        response.setEmail(user.getEmail());          // Eklendi
-        response.setPhoneNumber(user.getPhoneNumber()); // Eklendi
+        response.setEmail(user.getEmail());
+        response.setPhoneNumber(user.getPhoneNumber());
         response.setRole(user.getRole());
         response.setMessage("Giriş Başarılı");
 
