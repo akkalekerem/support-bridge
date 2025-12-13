@@ -19,12 +19,10 @@ export default function VolunteerPanel({ user }) {
         } catch (error) { console.error("Başvurular çekilemedi", error) }
     }
 
-    // Sohbeti Başlatma Fonksiyonu (Düzeltildi)
     const openChat = (app) => {
         setActiveChat({
             appointmentId: app.id,
-            otherUserId: app.event.requester.id, // Konuşulan: Talep Eden
-            // İSİM SORUNUNU ÇÖZEN SATIR 👇
+            otherUserId: app.event.requester.id,
             otherUserName: `${app.event.requester.firstName} ${app.event.requester.lastName}`
         })
     }
@@ -50,19 +48,17 @@ export default function VolunteerPanel({ user }) {
                 {activeTab === 'my-apps' && (
                     <div>
                         {activeChat ? (
-                            // SOHBET MODU
                             <div>
                                 <button onClick={() => setActiveChat(null)} className="btn btn-outline-secondary btn-sm mb-3">← Listeye Dön</button>
                                 <ChatWindow
                                     currentUser={user}
                                     otherUserId={activeChat.otherUserId}
-                                    otherUserName={activeChat.otherUserName} // Artık isim dolu gelecek
+                                    otherUserName={activeChat.otherUserName}
                                     appointmentId={activeChat.appointmentId}
-                                    onClose={() => setActiveChat(null)} // Kapat butonu artık çalışacak
+                                    onClose={() => setActiveChat(null)}
                                 />
                             </div>
                         ) : (
-                            // LİSTE MODU
                             <div className="row g-4">
                                 {myAppointments.length === 0 ? <div className="text-center py-5 text-muted"><h4>Başvurun yok.</h4></div> :
                                     myAppointments.map(app => (
@@ -81,9 +77,14 @@ export default function VolunteerPanel({ user }) {
                                                 <div className="card-body">
                                                     <h5 className="fw-bold">{app.event.title}</h5>
                                                     <p className="text-muted small">{app.event.description.substring(0, 80)}...</p>
+
                                                     <div className="small text-secondary bg-light p-2 rounded mb-3">
-                                                        <div>📅 {new Date(app.event.dateTime).toLocaleDateString()}</div>
+                                                        <div>📅 Etkinlik: {new Date(app.event.dateTime).toLocaleDateString()}</div>
                                                         <div>📍 {app.event.city}</div>
+                                                        {/* BAŞVURU ZAMANI BURADA */}
+                                                        <div className="text-muted border-top mt-1 pt-1" style={{fontSize: '0.75rem'}}>
+                                                            🕒 Başvuru: {app.appliedAt ? new Date(app.appliedAt).toLocaleString() : '-'}
+                                                        </div>
                                                     </div>
 
                                                     {app.status === 'APPROVED' ? (

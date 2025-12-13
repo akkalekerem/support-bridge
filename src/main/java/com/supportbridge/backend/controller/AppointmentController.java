@@ -13,43 +13,40 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/appointments")
 @RequiredArgsConstructor
+@CrossOrigin
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
 
     // BAŞVURU YAP (Gönüllü)
-    // URL: http://localhost:8080/api/appointments/apply
     @PostMapping("/apply")
     public ResponseEntity<String> applyForEvent(@RequestBody CreateAppointmentRequest request) {
         appointmentService.createAppointment(request);
         return ResponseEntity.ok("Başvurunuz alındı, talep edenin onayı bekleniyor.");
     }
 
-    // BAŞVURULARI LİSTELE (Talep Eden, kendi etkinliği için bakar)
-    // URL: http://localhost:8080/api/appointments/event/1
+    // BAŞVURULARI LİSTELE (Talep Eden)
     @GetMapping("/event/{eventId}")
     public ResponseEntity<List<Appointment>> getAppointmentsForEvent(@PathVariable Long eventId) {
         return ResponseEntity.ok(appointmentService.getRequestsForEvent(eventId));
     }
 
-    // BAŞVURU ONAYLA (Talep Eden)
-    // URL: http://localhost:8080/api/appointments/5/approve
+    // BAŞVURU ONAYLA
     @PutMapping("/{appointmentId}/approve")
     public ResponseEntity<String> approveAppointment(@PathVariable Long appointmentId) {
+        // Service içinde respondToAppointment varsa onu kullanıyoruz, yoksa updateStatus
         appointmentService.respondToAppointment(appointmentId, AppointmentStatus.APPROVED);
         return ResponseEntity.ok("Gönüllü başvurusu onaylandı! İletişime geçebilirsiniz.");
     }
 
-    // BAŞVURU REDDET (Talep Eden)
-    // URL: http://localhost:8080/api/appointments/5/reject
+    // BAŞVURU REDDET (Tek ve Net Halde)
     @PutMapping("/{appointmentId}/reject")
     public ResponseEntity<String> rejectAppointment(@PathVariable Long appointmentId) {
         appointmentService.respondToAppointment(appointmentId, AppointmentStatus.REJECTED);
         return ResponseEntity.ok("Başvuru reddedildi.");
     }
 
-    // GÖNÜLLÜ BAŞVURULARINI LİSTELE (GET)
-    // URL: http://localhost:8080/api/appointments/volunteer/1
+    // GÖNÜLLÜ BAŞVURULARINI LİSTELE
     @GetMapping("/volunteer/{volunteerId}")
     public ResponseEntity<List<Appointment>> getVolunteerAppointments(@PathVariable Long volunteerId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsForVolunteer(volunteerId));

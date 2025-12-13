@@ -18,46 +18,58 @@ public class AppointmentService {
     private final EventRepository eventRepository;
     private final VolunteerRepository volunteerRepository;
 
-    // 1. BAŞVURU YAPMA (Gönüllü)
+    // 1. BAŞVURU OLUŞTUR
     public void createAppointment(CreateAppointmentRequest request) {
-        // Etkinlik var mı?
+        // A. Etkinlik Var mı?
         Event event = eventRepository.findById(request.getEventId())
                 .orElseThrow(() -> new RuntimeException("Etkinlik bulunamadı!"));
 
-        // Gönüllü var mı?
+        // B. Gönüllü Var mı?
         Volunteer volunteer = volunteerRepository.findById(request.getVolunteerId())
                 .orElseThrow(() -> new RuntimeException("Gönüllü bulunamadı!"));
 
-        // Kontrol: Etkinlik onaylı mı? (Admin onayı yoksa başvurulamaz)
+        // C. KONTROL: Etkinlik onaylı mı? (Senin eklediğin harika kontrol ⭐)
         if (event.getStatus() != EventStatus.APPROVED) {
             throw new RuntimeException("Bu etkinlik henüz onaylanmamış veya aktif değil!");
         }
 
-        // Yeni Başvuru Oluştur
+        // D. KONTROL: Zaten başvurmuş mu? (Benim eklediğim güvenlik önlemi 🛡️)
+        boolean alreadyApplied = appointmentRepository.findAll().stream()
+                .anyMatch(a -> a.getEvent().getId().equals(event.getId()) &&
+                        a.getVolunteer().getId().equals(volunteer.getId()));
+
+        if (alreadyApplied) {
+            throw new RuntimeException("Bu etkinliğe zaten başvurdunuz. Sonuç bekleyiniz.");
+        }
+
+        // E. Kayıt
         Appointment appointment = new Appointment();
         appointment.setEvent(event);
         appointment.setVolunteer(volunteer);
-        appointment.setStatus(AppointmentStatus.PENDING); // Talep edenin onayını bekliyor
+        appointment.setStatus(AppointmentStatus.PENDING);
+
+        // createdAt ve appliedAt @PrePersist ile otomatik dolacak
 
         appointmentRepository.save(appointment);
     }
 
-    // 2. BAŞVURU ONAYLA/REDDET (Talep Eden)
-    public void respondToAppointment(Long appointmentId, AppointmentStatus status) {
-        Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Randevu bulunamadı!"));
-
-        appointment.setStatus(status);
-        appointmentRepository.save(appointment);
-    }
-
-    // 3. BİR ETKİNLİĞE GELEN BAŞVURULARI LİSTELE
+    // 2. ETKİNLİĞE GELEN BAŞVURULARI LİSTELE
     public List<Appointment> getRequestsForEvent(Long eventId) {
         return appointmentRepository.findByEventId(eventId);
     }
 
-    // 4. GÖNÜLLÜNÜN KENDİ BAŞVURULARINI GETİR
+    // 3. GÖNÜLLÜNÜN BAŞVURULARINI LİSTELE
     public List<Appointment> getAppointmentsForVolunteer(Long volunteerId) {
         return appointmentRepository.findByVolunteerId(volunteerId);
+    }
+
+    // 4. BAŞVURUYA CEVAP VER (Hem Onay Hem Ret İçin Ortak Metot)
+    // Controller'da yazdığımız 'approve' ve 'reject' metodları bunu kullanacak.
+    public void respondToAppointment(Long appointmentId, AppointmentStatus status) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Başvuru bulunamadı!"));
+
+        appointment.setStatus(status);
+        appointmentRepository.save(appointment);
     }
 }

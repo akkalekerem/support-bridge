@@ -34,9 +34,16 @@ public class Appointment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "applied_at")
+    private LocalDateTime appliedAt; // Başvuru Tarihi
+
+    // TEK BİR METOT İÇİNDE HEPSİNİ YAPIYORUZ
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.appliedAt = now; // İkisi de aynı zaman
+
         if (this.status == null) {
             this.status = AppointmentStatus.PENDING; // İlk oluştuğunda 'Bekliyor' olsun
         }

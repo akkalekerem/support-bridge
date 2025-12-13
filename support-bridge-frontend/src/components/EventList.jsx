@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-export default function EventList({ user, myAppointments = [] }) {
+export default function EventList({ user }) {
     const [events, setEvents] = useState([])
-    const [loading, setLoading] = useState(true)
+    const [filterCity, setFilterCity] = useState('')
+    const [searchQuery, setSearchQuery] = useState('')
 
     useEffect(() => {
         fetchEvents()
@@ -13,10 +14,8 @@ export default function EventList({ user, myAppointments = [] }) {
         try {
             const response = await axios.get('http://localhost:8080/api/events')
             setEvents(response.data)
-            setLoading(false)
         } catch (error) {
-            console.error("Hata:", error)
-            setLoading(false)
+            console.error("Etkinlikler yüklenemedi", error)
         }
     }
 
@@ -28,117 +27,76 @@ export default function EventList({ user, myAppointments = [] }) {
                 volunteerId: user.id,
                 eventId: eventId
             })
-            alert("Başvurun başarıyla alındı! Durumunu yukarıdan takip edebilirsin. ✅")
+            // YENİ MESAJ BURADA
+            alert("Başvurun başarıyla alındı! Durumunu 'Başvurularım' sekmesinden takip edebilirsin. ✅")
             window.location.reload()
         } catch (error) {
-            alert("Başvuru sırasında bir hata oluştu. ❌")
+            alert(`Başvuru başarısız: ${error.response?.data?.message || error.message}`)
         }
     }
 
-    // --- RESİM SEÇME MANTIĞI (GARANTİLİ) ---
-    const getCategoryImage = (category) => {
-        if (category === 'CELEBRATION') {
-            // Yeni Link: Daha güvenilir bir kutlama görseli
-            return 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80'
-        }
-        // Destek Görseli (Zaten çalışıyor)
-        return 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
-    }
+    // FİLTRELEME MANTIĞI (Arama + Şehir)
+    const filteredEvents = events.filter(event => {
+        const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            event.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCity = filterCity ? event.city.toLowerCase() === filterCity.toLowerCase() : true;
+        // Sadece ONAYLI etkinlikleri göster
+        const isApproved = event.status === 'APPROVED';
 
-    // --- YEDEK RESİM (Eğer yukarıdakiler açılmazsa bu devreye girer) ---
-    const handleImageError = (e) => {
-        e.target.onerror = null; // Sonsuz döngüyü engeller
-        // Renkli, üzerinde "Resim Yok" yazan basit bir kutu resmi
-        e.target.src = "https://placehold.co/600x400/orange/white?text=Kutlama+Gorseli";
-    }
+        return matchesSearch && matchesCity && isApproved;
+    })
 
-    if (loading) return (
-        <div className="d-flex justify-content-center my-5">
-            <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Yükleniyor...</span>
-            </div>
-        </div>
-    )
+    // Benzersiz şehirleri bul (Filtre kutusu için)
+    const cities = [...new Set(events.map(e => e.city))];
+
+    const getCategoryImage = (category) => category === 'CELEBRATION' ? 'https://images.unsplash.com/photo-1533294160622-d5fece3e080d?auto=format&fit=crop&w=600&q=80' : 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=600&q=80'
 
     return (
-        <div className="container">
-            {events.length === 0 ? (
-                <div className="text-center py-5 text-muted">
-                    <h3>📭 Henüz Aktif Etkinlik Yok</h3>
-                    <p>Şu an açık bir talep bulunmuyor, lütfen daha sonra tekrar kontrol et.</p>
+        <div>
+            {/* ARAMA VE FİLTRE ALANI */}
+            <div className="row g-2 mb-4">
+                <div className="col-md-8">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="🔍 Etkinlik ara..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                 </div>
-            ) : (
-                <div className="row g-4">
-                    {events.map((event) => {
-                        const isApplied = myAppointments.some(app => app.event.id === event.id)
+                <div className="col-md-4">
+                    <select className="form-select" value={filterCity} onChange={(e) => setFilterCity(e.target.value)}>
+                        <option value="">Tüm Şehirler</option>
+                        {cities.map(city => <option key={city} value={city}>{city}</option>)}
+                    </select>
+                </div>
+            </div>
 
-                        return (
-                            <div key={event.id} className="col-md-6 col-lg-4">
-                                <div className="card h-100 shadow-sm border-0 overflow-hidden hover-shadow hover-effect transition-all">
+            <div className="row g-4">
+                {filteredEvents.length === 0 ? <div className="text-center text-muted py-5">Aradığınız kriterlere uygun etkinlik bulunamadı.</div> :
+                    filteredEvents.map(event => (
+                        <div key={event.id} className="col-md-6 col-lg-4">
+                            <div className="card h-100 shadow-sm border-0 hover-shadow transition-all">
+                                <img src={getCategoryImage(event.category)} className="card-img-top" style={{height: '180px', objectFit: 'cover'}}
+                                     onError={(e) => {e.target.onerror=null; e.target.src="https://placehold.co/600x400"}}/>
+                                <div className="card-body d-flex flex-column">
+                                    <h5 className="card-title fw-bold text-dark">{event.title}</h5>
+                                    <p className="card-text text-muted small">{event.description.substring(0, 80)}...</p>
 
-                                    {/* KART GÖRSEL ALANI */}
-                                    <div className="position-relative bg-light" style={{ height: '180px' }}>
-                                        <img
-                                            src={getCategoryImage(event.category)}
-                                            alt={event.category}
-                                            className="w-100 h-100"
-                                            style={{ objectFit: 'cover' }}
-                                            onError={handleImageError} // Hata olursa yedek devreye girer
-                                        />
-
-                                        {/* Sağ üst köşe kategori etiketi */}
-                                        <span className={`position-absolute top-0 end-0 m-2 badge rounded-pill ${event.category === 'SUPPORT' ? 'bg-success' : 'bg-warning text-dark'}`}>
-                      {event.category === 'SUPPORT' ? '🤝 Destek' : '🎉 Kutlama'}
-                    </span>
-                                    </div>
-
-                                    <div className="card-body d-flex flex-column">
-                                        <div className="d-flex justify-content-between align-items-center mb-2">
-                                            <h5 className="card-title fw-bold text-dark mb-0 text-truncate" title={event.title}>
-                                                {event.title}
-                                            </h5>
+                                    <div className="mt-auto">
+                                        <div className="d-flex justify-content-between text-secondary small mb-3 bg-light p-2 rounded">
+                                            <span>📅 {new Date(event.dateTime).toLocaleDateString()}</span>
+                                            <span>📍 {event.city}</span>
                                         </div>
-
-                                        <h6 className="text-primary small mb-3">
-                                            <i className="bi bi-tag-fill me-1"></i>{event.subType}
-                                        </h6>
-
-                                        <p className="card-text text-muted small flex-grow-1">
-                                            {event.description.length > 100 ? event.description.substring(0, 100) + '...' : event.description}
-                                        </p>
-
-                                        <div className="bg-light p-2 rounded mb-3 small text-secondary">
-                                            <div className="mb-1">📍 <strong>{event.city}</strong>, {event.address}</div>
-                                            <div>📅 {new Date(event.dateTime).toLocaleString('tr-TR', { dateStyle: 'medium', timeStyle: 'short' })}</div>
-                                        </div>
-
-                                        {/* ALT KISIM: Kontenjan ve Buton */}
-                                        <div className="d-flex justify-content-between align-items-center mt-2">
-                                            <small className="text-muted fw-bold">
-                                                👥 Kontenjan: {event.quota}
-                                            </small>
-
-                                            {isApplied ? (
-                                                <button className="btn btn-secondary btn-sm px-3 rounded-pill" disabled>
-                                                    ✅ Başvuruldu
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    onClick={() => handleApply(event.id)}
-                                                    className="btn btn-primary btn-sm px-4 rounded-pill fw-bold shadow-sm"
-                                                >
-                                                    Başvur ✋
-                                                </button>
-                                            )}
-                                        </div>
-
+                                        <button onClick={() => handleApply(event.id)} className="btn btn-primary w-100 fw-bold shadow-sm">
+                                            Gönüllü Ol ✋
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                        )
-                    })}
-                </div>
-            )}
+                        </div>
+                    ))}
+            </div>
         </div>
     )
 }
