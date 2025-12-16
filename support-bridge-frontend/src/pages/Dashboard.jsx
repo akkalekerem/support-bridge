@@ -3,11 +3,12 @@ import RequesterPanel from '../components/RequesterPanel'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import VolunteerPanel from '../components/VolunteerPanel'
-import EventForm from '../components/EventForm' // Talep Eden için form (YENİ EKLENDİ)
+import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
     const [user, setUser] = useState(null)
     const navigate = useNavigate()
+    const { t } = useTranslation();
 
     useEffect(() => {
         // 1. Tarayıcı hafızasından giriş yapan kullanıcıyı oku
@@ -31,25 +32,34 @@ export default function Dashboard() {
     // Kullanıcı bilgisi yüklenene kadar bekle
     if (!user) return null
 
+    const getRoleName = (role) => {
+        switch (role) {
+            case 'ADMIN': return t('roles.admin');
+            case 'VOLUNTEER': return t('roles.volunteer');
+            case 'REQUESTER': return t('roles.requester');
+            default: return role;
+        }
+    }
+
     return (
         <div className="container mt-5">
 
             {/* ÜST BİLGİ KUTUSU (Çıkış butonu yok, sadece kimlik bilgisi var) */}
             <div className="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded shadow-sm">
                 <div>
-                    <h2 className="text-primary mb-0">Kontrol Paneli</h2>
-                    <p className="text-muted mb-0">Hoşgeldin, {user.firstName} {user.lastName}</p>
+                    <h2 className="text-primary mb-0">{t('dashboard.title')}</h2>
+                    <p className="text-muted mb-0">{t('dashboard.welcome', { name: user.firstName, surname: user.lastName })}</p>
                 </div>
 
                 <div>
                     {/* ROL ROZETİ (Burada kalmalı ki kullanıcı rolünü bilsin) */}
-                    <span className={`badge fs-6 px-3 py-2 ${
-                        user.role === 'ADMIN' ? 'bg-danger' :
+                    <span className={`badge fs-6 px-3 py-2 ${user.role === 'ADMIN' ? 'bg-danger' :
                             user.role === 'VOLUNTEER' ? 'bg-success' : 'bg-secondary'
-                    }`}>
-            {user.role === 'ADMIN' ? '🛡️ Yönetici' :
-                user.role === 'VOLUNTEER' ? '🦸‍♂️ Gönüllü' : '🤝 Talep Eden'}
-          </span>
+                        }`}>
+                        {user.role === 'ADMIN' ? '🛡️ ' :
+                            user.role === 'VOLUNTEER' ? '🦸‍♂️ ' : '🤝 '}
+                        {getRoleName(user.role)}
+                    </span>
                 </div>
             </div>
 

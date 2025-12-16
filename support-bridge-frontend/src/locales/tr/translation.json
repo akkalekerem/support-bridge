@@ -1,0 +1,91 @@
+{
+    "navbar": {
+        "home": "Anasayfa",
+        "login": "Giriş Yap",
+        "register": "Kayıt Ol",
+        "dashboard": "Dashboard",
+        "profile": "Profilim",
+        "logout": "Çıkış Yap",
+        "welcome": "Merhaba, {{name}}"
+    },
+    "home": {
+        "hero_title": "Support Bridge",
+        "hero_text": "İyilik yapmak isteyenlerle, desteğe ihtiyacı olanları buluşturan en güvenilir dijital köprü.",
+        "volunteer_btn": "🦸‍♂️ Gönüllü Ol",
+        "requester_btn": "🤝 Destek İste",
+        "how_it_works_title": "Nasıl Çalışır?",
+        "how_it_works_sub": "Sadece 3 adımda hayatlara dokunun.",
+        "step1_title": "1. Kayıt Olun",
+        "step1_text": "İster gönüllü olarak, ister destek talep eden olarak sisteme katılın.",
+        "step2_title": "2. Etkinlik Bulun",
+        "step2_text": "İhtiyaç sahipleri etkinlik açar, gönüllüler başvurur. Sistem sizi eşleştirir.",
+        "step3_title": "3. İletişime Geçin",
+        "step3_text": "Onaylanan eşleşmelerden sonra güvenli mesajlaşma ile detayları konuşun.",
+        "vol_title": "Gönüllüler İçin",
+        "vol_text": "Boş zamanlarınızda birinin kahramanı olabilirsiniz. Yeteneklerinizi ve zamanınızı toplumsal faydaya dönüştürün.",
+        "vol_li1": "✅ Sosyal sorumluluk projelerine katılın",
+        "vol_li2": "✅ Yeni insanlarla tanışın",
+        "vol_li3": "✅ Sertifikalı etkinlik geçmişi oluşturun",
+        "req_title": "Destek İsteyenler İçin",
+        "req_text": "Yalnız değilsiniz. Market alışverişinden, kitap okumaya kadar birçok konuda gönüllülerimiz yanınızda.",
+        "req_btn": "Hemen Destek İste ➤"
+    },
+    "login": {
+        "hero_title": "İyilik Bulaşıcıdır.",
+        "hero_text": "Bugün birinin hayatına dokunmak için harika bir gün.",
+        "welcome": "Tekrar Hoşgeldiniz! 👋",
+        "sub": "Hesabınıza giriş yapın",
+        "email_label": "EMAIL ADRESİ",
+        "password_label": "ŞİFRE",
+        "submit_btn": "Giriş Yap",
+        "no_account": "Hesabın yok mu?",
+        "register": "Kayıt Ol",
+        "back_home": "← Anasayfaya Dön",
+        "error": "Giriş başarısız! Email veya şifre hatalı."
+    },
+    "register": {
+        "volunteer_title": "Kahramanımız Olun",
+        "volunteer_sub": "Topluluğumuza katılarak dünyayı değiştirmeye bugünden başlayın.",
+        "requester_title": "Yanınızdayız",
+        "requester_sub": "İhtiyaçlarınızı paylaşın, gönüllülerimiz size ulaşsın.",
+        "create_vol_account": "🦸‍♂️ Gönüllü Hesabı Oluştur",
+        "create_req_account": "🤝 Destek Hesabı Oluştur",
+        "join_us": "Formu doldurarak aramıza katılın.",
+        "label_name": "AD",
+        "label_surname": "SOYAD",
+        "label_email": "EMAIL",
+        "label_password": "ŞİFRE",
+        "label_phone": "TELEFON",
+        "label_exp": "GÖNÜLLÜLÜK TECRÜBENİZ",
+        "label_doc": "DURUM BELGESİ (URL)",
+        "submit": "Kaydı Tamamla",
+        "have_account": "Zaten hesabınız var mı?",
+        "login": "Giriş Yap",
+        "success": "Kayıt Başarılı! Şimdi giriş yapabilirsiniz.",
+        "error": "Kayıt başarısız! Bilgileri kontrol edin."
+    },
+    "dashboard": {
+        "title": "Kontrol Paneli",
+        "welcome": "Hoşgeldin, {{name}} {{surname}}"
+    },
+    "roles": {
+        "admin": "Yönetici",
+        "volunteer": "Gönüllü",
+        "requester": "Talep Eden"
+    },
+    "profile": {
+        "loading": "Yükleniyor...",
+        "personal_info": "Kişisel Bilgiler",
+        "email": "Email Adresi:",
+        "phone": "Telefon:",
+        "exp_note": "Tecrübe Notu:",
+        "not_entered": "Girilmemiş.",
+        "document": "Dosya/Belge:",
+        "not_uploaded": "Yüklenmemiş.",
+        "info_alert": "Bilgilerinizi güncellemek veya şifre değiştirmek için lütfen sistem yöneticisi ile iletişime geçiniz."
+    },
+    "footer": {
+        "text": "Teknoloji ile İyiliği Buluşturuyoruz.",
+        "copy": "© 2025 Tüm Hakları Saklıdır."
+    }
+}

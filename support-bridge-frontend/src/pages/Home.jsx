@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next';
 
 export default function Home() {
+    const { t } = useTranslation();
+
     return (
         <div className="container-fluid p-0">
 
@@ -15,17 +18,16 @@ export default function Home() {
                 }}
             >
                 <div className="container">
-                    <h1 className="display-3 fw-bold mb-4">Support Bridge</h1>
+                    <h1 className="display-3 fw-bold mb-4">{t('home.hero_title')}</h1>
                     <p className="lead fs-4 mb-5 px-md-5">
-                        İyilik yapmak isteyenlerle, desteğe ihtiyacı olanları buluşturan <br/>
-                        en güvenilir dijital köprü.
+                        {t('home.hero_text')} <br />
                     </p>
                     <div className="d-flex justify-content-center gap-3">
                         <Link to="/register?role=VOLUNTEER" className="btn btn-success btn-lg px-5 py-3 fw-bold rounded-pill shadow">
-                            🦸‍♂️ Gönüllü Ol
+                            {t('home.volunteer_btn')}
                         </Link>
                         <Link to="/register?role=REQUESTER" className="btn btn-outline-light btn-lg px-5 py-3 fw-bold rounded-pill">
-                            🤝 Destek İste
+                            {t('home.requester_btn')}
                         </Link>
                     </div>
                 </div>
@@ -34,29 +36,29 @@ export default function Home() {
             {/* 2. NASIL ÇALIŞIR? (İKONLU BÖLÜM) */}
             <div className="container py-5 my-5">
                 <div className="text-center mb-5">
-                    <h2 className="fw-bold text-primary">Nasıl Çalışır?</h2>
-                    <p className="text-muted">Sadece 3 adımda hayatlara dokunun.</p>
+                    <h2 className="fw-bold text-primary">{t('home.how_it_works_title')}</h2>
+                    <p className="text-muted">{t('home.how_it_works_sub')}</p>
                 </div>
                 <div className="row g-4 text-center">
                     <div className="col-md-4">
                         <div className="p-4 rounded shadow-sm h-100 border hover-effect">
                             <div className="display-4 text-primary mb-3">📝</div>
-                            <h4>1. Kayıt Olun</h4>
-                            <p className="text-muted">İster gönüllü olarak, ister destek talep eden olarak sisteme katılın.</p>
+                            <h4>{t('home.step1_title')}</h4>
+                            <p className="text-muted">{t('home.step1_text')}</p>
                         </div>
                     </div>
                     <div className="col-md-4">
                         <div className="p-4 rounded shadow-sm h-100 border hover-effect">
                             <div className="display-4 text-success mb-3">🔍</div>
-                            <h4>2. Etkinlik Bulun</h4>
-                            <p className="text-muted">İhtiyaç sahipleri etkinlik açar, gönüllüler başvurur. Sistem sizi eşleştirir.</p>
+                            <h4>{t('home.step2_title')}</h4>
+                            <p className="text-muted">{t('home.step2_text')}</p>
                         </div>
                     </div>
                     <div className="col-md-4">
                         <div className="p-4 rounded shadow-sm h-100 border hover-effect">
                             <div className="display-4 text-warning mb-3">💬</div>
-                            <h4>3. İletişime Geçin</h4>
-                            <p className="text-muted">Onaylanan eşleşmelerden sonra güvenli mesajlaşma ile detayları konuşun.</p>
+                            <h4>{t('home.step3_title')}</h4>
+                            <p className="text-muted">{t('home.step3_text')}</p>
                         </div>
                     </div>
                 </div>
@@ -74,15 +76,14 @@ export default function Home() {
                             />
                         </div>
                         <div className="col-md-6 ps-md-5 mt-4 mt-md-0">
-                            <h3 className="fw-bold text-dark">Gönüllüler İçin</h3>
+                            <h3 className="fw-bold text-dark">{t('home.vol_title')}</h3>
                             <p className="lead text-muted">
-                                Boş zamanlarınızda birinin kahramanı olabilirsiniz. Yeteneklerinizi ve zamanınızı
-                                toplumsal faydaya dönüştürün.
+                                {t('home.vol_text')}
                             </p>
                             <ul className="list-unstyled">
-                                <li className="mb-2">✅ Sosyal sorumluluk projelerine katılın</li>
-                                <li className="mb-2">✅ Yeni insanlarla tanışın</li>
-                                <li>✅ Sertifikalı etkinlik geçmişi oluşturun</li>
+                                <li className="mb-2">{t('home.vol_li1')}</li>
+                                <li className="mb-2">{t('home.vol_li2')}</li>
+                                <li>{t('home.vol_li3')}</li>
                             </ul>
                         </div>
                     </div>
@@ -96,13 +97,12 @@ export default function Home() {
                             />
                         </div>
                         <div className="col-md-6 pe-md-5 mt-4 mt-md-0">
-                            <h3 className="fw-bold text-dark">Destek İsteyenler İçin</h3>
+                            <h3 className="fw-bold text-dark">{t('home.req_title')}</h3>
                             <p className="lead text-muted">
-                                Yalnız değilsiniz. Market alışverişinden, kitap okumaya kadar birçok konuda
-                                gönüllülerimiz yanınızda.
+                                {t('home.req_text')}
                             </p>
                             <Link to="/register?role=REQUESTER" className="btn btn-primary mt-3">
-                                Hemen Destek İste ➤
+                                {t('home.req_btn')}
                             </Link>
                         </div>
                     </div>
@@ -113,8 +113,8 @@ export default function Home() {
             <footer className="bg-dark text-white text-center py-4 mt-0">
                 <div className="container">
                     <h5 className="fw-bold">Support Bridge 🌉</h5>
-                    <p className="small text-white-50">Teknoloji ile İyiliği Buluşturuyoruz.</p>
-                    <small>© 2025 Tüm Hakları Saklıdır.</small>
+                    <p className="small text-white-50">{t('footer.text')}</p>
+                    <small>{t('footer.copy')}</small>
                 </div>
             </footer>
         </div>

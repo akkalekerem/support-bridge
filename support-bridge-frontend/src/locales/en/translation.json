@@ -1,0 +1,91 @@
+{
+    "navbar": {
+        "home": "Home",
+        "login": "Login",
+        "register": "Register",
+        "dashboard": "Dashboard",
+        "profile": "Profile",
+        "logout": "Logout",
+        "welcome": "Hello, {{name}}"
+    },
+    "home": {
+        "hero_title": "Support Bridge",
+        "hero_text": "The most reliable digital bridge connecting those who want to do good with those in need of support.",
+        "volunteer_btn": "🦸‍♂️ Be a Volunteer",
+        "requester_btn": "🤝 Request Support",
+        "how_it_works_title": "How It Works?",
+        "how_it_works_sub": "Touch lives in just 3 steps.",
+        "step1_title": "1. Sign Up",
+        "step1_text": "Join the system either as a volunteer or as someone requesting support.",
+        "step2_title": "2. Find Activities",
+        "step2_text": "Those in need open activities, volunteers apply. The system matches you.",
+        "step3_title": "3. Get in Touch",
+        "step3_text": "Discuss details via secure messaging after approved matches.",
+        "vol_title": "For Volunteers",
+        "vol_text": "You can be someone's hero in your spare time. Turn your skills and time into social benefit.",
+        "vol_li1": "✅ Participate in social responsibility projects",
+        "vol_li2": "✅ Meet new people",
+        "vol_li3": "✅ Create a certified activity history",
+        "req_title": "For Those Requesting Support",
+        "req_text": "You are not alone. Our volunteers are with you on many issues from grocery shopping to reading books.",
+        "req_btn": "Request Support Now ➤"
+    },
+    "login": {
+        "hero_title": "Goodness is Contagious.",
+        "hero_text": "Today is a great day to touch someone's life.",
+        "welcome": "Welcome Back! 👋",
+        "sub": "Log in to your account",
+        "email_label": "EMAIL ADDRESS",
+        "password_label": "PASSWORD",
+        "submit_btn": "Login",
+        "no_account": "Don't have an account?",
+        "register": "Register",
+        "back_home": "← Back to Home",
+        "error": "Login failed! Incorrect email or password."
+    },
+    "register": {
+        "volunteer_title": "Be Our Hero",
+        "volunteer_sub": "Start changing the world today by joining our community.",
+        "requester_title": "We Are With You",
+        "requester_sub": "Share your needs, let our volunteers reach you.",
+        "create_vol_account": "🦸‍♂️ Create Volunteer Account",
+        "create_req_account": "🤝 Create Requester Account",
+        "join_us": "Join us by filling out the form.",
+        "label_name": "FIRST NAME",
+        "label_surname": "LAST NAME",
+        "label_email": "EMAIL",
+        "label_password": "PASSWORD",
+        "label_phone": "PHONE",
+        "label_exp": "VOLUNTEER EXPERIENCE",
+        "label_doc": "STATUS DOCUMENT (URL)",
+        "submit": "Complete Registration",
+        "have_account": "Already have an account?",
+        "login": "Login",
+        "success": "Registration Successful! You can login now.",
+        "error": "Registration failed! Check your information."
+    },
+    "dashboard": {
+        "title": "Control Panel",
+        "welcome": "Welcome, {{name}} {{surname}}"
+    },
+    "roles": {
+        "admin": "Admin",
+        "volunteer": "Volunteer",
+        "requester": "Requester"
+    },
+    "profile": {
+        "loading": "Loading...",
+        "personal_info": "Personal Information",
+        "email": "Email Address:",
+        "phone": "Phone:",
+        "exp_note": "Experience Note:",
+        "not_entered": "Not entered.",
+        "document": "Document:",
+        "not_uploaded": "Not uploaded.",
+        "info_alert": "Please contact the system administrator to update your information or change your password."
+    },
+    "footer": {
+        "text": "Bringing Technology and Goodness Together.",
+        "copy": "© 2025 All Rights Reserved."
+    }
+}

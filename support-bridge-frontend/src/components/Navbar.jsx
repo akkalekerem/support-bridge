@@ -1,8 +1,11 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Navbar() {
     const navigate = useNavigate()
     const location = useLocation()
+    const { t } = useTranslation();
 
     // LocalStorage'dan kullanıcıyı kontrol et
     const user = JSON.parse(localStorage.getItem('user'))
@@ -33,24 +36,27 @@ export default function Navbar() {
 
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav ms-auto align-items-center">
+                        <li className="nav-item me-3">
+                            <LanguageSwitcher />
+                        </li>
 
                         {user ? (
                             // --- GİRİŞ YAPMIŞ KULLANICI MENÜSÜ ---
                             <>
                                 <li className="nav-item">
-                  <span className="nav-link text-dark fw-bold">
-                    Merhaba, {user.firstName}
-                  </span>
+                                    <span className="nav-link text-dark fw-bold">
+                                        {t('navbar.welcome', { name: user.firstName })}
+                                    </span>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to="/dashboard">Dashboard</Link>
+                                    <Link className="nav-link" to="/dashboard">{t('navbar.dashboard')}</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to="/profile">Profilim</Link>
+                                    <Link className="nav-link" to="/profile">{t('navbar.profile')}</Link>
                                 </li>
                                 <li className="nav-item ms-2">
                                     <button onClick={handleLogout} className="btn btn-outline-danger btn-sm">
-                                        Çıkış Yap
+                                        {t('navbar.logout')}
                                     </button>
                                 </li>
                             </>
@@ -58,13 +64,13 @@ export default function Navbar() {
                             // --- GİRİŞ YAPMAMIŞ ZİYARETÇİ MENÜSÜ ---
                             <>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to="/">Anasayfa</Link>
+                                    <Link className="nav-link" to="/">{t('navbar.home')}</Link>
                                 </li>
                                 <li className="nav-item ms-2">
-                                    <Link className="btn btn-outline-primary btn-sm" to="/login">Giriş Yap</Link>
+                                    <Link className="btn btn-outline-primary btn-sm" to="/login">{t('navbar.login')}</Link>
                                 </li>
                                 <li className="nav-item ms-2">
-                                    <Link className="btn btn-primary btn-sm" to="/register">Kayıt Ol</Link>
+                                    <Link className="btn btn-primary btn-sm" to="/register">{t('navbar.register')}</Link>
                                 </li>
                             </>
                         )}
