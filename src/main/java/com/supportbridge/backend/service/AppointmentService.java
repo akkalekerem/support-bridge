@@ -17,6 +17,7 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final EventRepository eventRepository;
     private final VolunteerRepository volunteerRepository;
+    private final NotificationService notificationService;
 
     // 1. BAŞVURU OLUŞTUR
     public void createAppointment(CreateAppointmentRequest request) {
@@ -71,5 +72,10 @@ public class AppointmentService {
 
         appointment.setStatus(status);
         appointmentRepository.save(appointment);
+
+        // BİLDİRİM GÖNDER 🔔
+        String message = "Etkinlik başvurunuz "
+                + (status == AppointmentStatus.APPROVED ? "ONAYLANDI ✅" : "REDDEDİLDİ ❌") + ".";
+        notificationService.createNotification(appointment.getVolunteer().getId(), message);
     }
 }

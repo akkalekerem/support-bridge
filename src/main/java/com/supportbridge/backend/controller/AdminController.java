@@ -15,6 +15,7 @@ import java.util.List;
 public class AdminController {
 
     private final EventService eventService;
+    private final com.supportbridge.backend.repository.RequesterRepository requesterRepository;
 
     // ETKİNLİK ONAYLA (PUT)
     // Adres: http://localhost:8080/api/admin/events/1/approve
@@ -37,5 +38,12 @@ public class AdminController {
     @GetMapping("/events/pending")
     public ResponseEntity<List<Event>> getPendingEvents() {
         return ResponseEntity.ok(eventService.getPendingEvents());
+    }
+
+    // YARDIM İSTEYENLERİ LİSTELE (GET)
+    // URL: http://localhost:8080/api/admin/requesters
+    @GetMapping("/requesters")
+    public ResponseEntity<List<com.supportbridge.backend.entity.Requester>> getRequesters() {
+        return ResponseEntity.ok(requesterRepository.findAll());
     }
 }

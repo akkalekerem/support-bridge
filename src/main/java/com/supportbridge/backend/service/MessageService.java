@@ -17,6 +17,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // MESAJ GÖNDER
     public void sendMessage(SendMessageRequest request) {
@@ -40,6 +41,18 @@ public class MessageService {
         message.setContent(request.getContent());
 
         messageRepository.save(message);
+
+        // BİLDİRİM GÖNDER 🔔
+        // Alıcıyı belirle: Eğer mesajı gönderen Gönüllü ise alıcı Requester, tam tersi
+        // ise Volunteer
+        User recipient;
+        if (sender.getId().equals(appointment.getVolunteer().getId())) {
+            recipient = appointment.getEvent().getRequester();
+        } else {
+            recipient = appointment.getVolunteer();
+        }
+
+        notificationService.createNotification(recipient.getId(), "Yeni Mesajınız Var: " + sender.getFirstName());
     }
 
     // GEÇMİŞ MESAJLARI GETİR
