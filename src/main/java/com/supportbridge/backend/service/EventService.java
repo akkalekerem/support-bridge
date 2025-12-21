@@ -18,6 +18,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // 1. ETKİNLİK OLUŞTUR (GÜNCELLENDİ: ID ve Event alıyor)
     public Event createEvent(Long requesterId, Event event) {
@@ -62,5 +63,17 @@ public class EventService {
 
         event.setStatus(status);
         eventRepository.save(event);
+
+        // Bildirim Gönder
+        String message = "";
+        if (status == EventStatus.APPROVED) {
+            message = "Etkinliğiniz ('" + event.getTitle() + "') onaylandı! 🎉";
+        } else if (status == EventStatus.REJECTED) {
+            message = "Etkinliğiniz ('" + event.getTitle() + "') maalesef reddedildi. 😔";
+        }
+
+        if (!message.isEmpty()) {
+            notificationService.createNotification(event.getRequester().getId(), message);
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 export default function EventForm({ user }) {
@@ -15,6 +15,20 @@ export default function EventForm({ user }) {
     })
 
     const [message, setMessage] = useState({ text: '', type: '' })
+    const [cities, setCities] = useState([])
+
+    useEffect(() => {
+        // Şehirleri çek
+        const fetchCities = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/public/cities')
+                setCities(response.data)
+            } catch (error) {
+                console.error("Şehirler yüklenemedi:", error)
+            }
+        }
+        fetchCities()
+    }, [])
 
     // Kutucuklara yazılanları state'e aktar
     const handleChange = (e) => {
@@ -135,10 +149,15 @@ export default function EventForm({ user }) {
                     <div className="row mb-3">
                         <div className="col-md-4">
                             <label className="form-label">Şehir</label>
-                            <input
-                                type="text" className="form-control" name="city"
+                            <select
+                                className="form-select" name="city"
                                 value={formData.city} onChange={handleChange} required
-                            />
+                            >
+                                <option value="">Şehir Seçiniz</option>
+                                {cities.map((city, index) => (
+                                    <option key={index} value={city}>{city}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="col-md-8">
                             <label className="form-label">Adres</label>

@@ -15,12 +15,37 @@ export default function Register() {
         role: roleParam, experienceNote: '', documentPath: ''
     })
 
+    const [showPassword, setShowPassword] = useState(false);
+    const [uploading, setUploading] = useState(false);
+
     useEffect(() => {
         setFormData(prev => ({ ...prev, role: roleParam }))
     }, [roleParam])
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
+    }
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const uploadData = new FormData();
+        uploadData.append('file', file);
+
+        setUploading(true);
+        try {
+            const response = await axios.post('http://localhost:8080/api/upload', uploadData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            // Gelen dosya yolunu kaydet
+            setFormData({ ...formData, documentPath: response.data });
+        } catch (error) {
+            console.error("Dosya yükleme hatası", error);
+            alert("Dosya yüklenemedi!");
+        } finally {
+            setUploading(false);
+        }
     }
 
     const handleSubmit = async (e) => {
@@ -96,7 +121,22 @@ export default function Register() {
 
                                     <div className="col-sm-6">
                                         <label className="form-label small fw-bold text-secondary">{t('register.label_password')}</label>
-                                        <input type="password" name="password" className="form-control bg-light border-0" onChange={handleChange} required />
+                                        <div className="input-group">
+                                            <input
+                                                type={showPassword ? "text" : "password"}
+                                                name="password"
+                                                className="form-control bg-light border-0"
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                            <button
+                                                className="btn btn-light"
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? "🙈" : "👁️"}
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="col-sm-6">
                                         <label className="form-label small fw-bold text-secondary">{t('register.label_phone')}</label>
@@ -114,7 +154,14 @@ export default function Register() {
                                     {!isVolunteer && (
                                         <div className="col-12">
                                             <label className="form-label small fw-bold text-secondary">{t('register.label_doc')}</label>
-                                            <input type="text" name="documentPath" className="form-control bg-light border-0" onChange={handleChange} placeholder="Google Drive linki vb." />
+                                            {/* Dosya Yükleme Inputu */}
+                                            <input
+                                                type="file"
+                                                className="form-control bg-light border-0"
+                                                onChange={handleFileUpload}
+                                            />
+                                            {uploading && <div className="text-info small mt-1">Yükleniyor...</div>}
+                                            {formData.documentPath && <div className="text-success small mt-1">Dosya yüklendi! ✅</div>}
                                         </div>
                                     )}
                                 </div>

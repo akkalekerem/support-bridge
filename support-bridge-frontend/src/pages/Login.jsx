@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function Login() {
     const [formData, setFormData] = useState({ email: '', password: '' })
+    const [showPassword, setShowPassword] = useState(false)
     const navigate = useNavigate()
     const { t } = useTranslation();
 
@@ -69,14 +70,23 @@ export default function Login() {
 
                             <div className="mb-4">
                                 <label className="form-label fw-bold small text-secondary">{t('login.password_label')}</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    className="form-control form-control-lg bg-light border-0"
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="******"
-                                />
+                                <div className="input-group">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        className="form-control form-control-lg bg-light border-0"
+                                        onChange={handleChange}
+                                        required
+                                        placeholder="******"
+                                    />
+                                    <button
+                                        className="btn btn-light"
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? "🙈" : "👁️"}
+                                    </button>
+                                </div>
                             </div>
 
                             <button type="submit" className="btn btn-primary btn-lg w-100 mb-3 shadow-sm">
