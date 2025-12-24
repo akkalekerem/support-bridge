@@ -8,6 +8,7 @@ import com.supportbridge.backend.repository.EventRepository;
 import com.supportbridge.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,6 +58,7 @@ public class EventService {
     }
 
     // ETKİNLİK DURUMUNU GÜNCELLE (Admin için)
+    @Transactional
     public void updateEventStatus(Long eventId, EventStatus status) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Etkinlik bulunamadı!"));
