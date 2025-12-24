@@ -10,6 +10,7 @@ import com.supportbridge.backend.repository.VolunteerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // 👈 Bunu ekle
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     // --- KAYIT OLMA METODU ---
+    @Transactional // 👈 Bunu ekle
     public void register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Bu email adresi zaten kullanımda!");
