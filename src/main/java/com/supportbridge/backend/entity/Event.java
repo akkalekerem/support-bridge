@@ -2,64 +2,48 @@ package com.supportbridge.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "events")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title; // Başlık: "Huzurevi Ziyareti"
+    private String title;
 
-    @Column(length = 1000) // Açıklama uzun olabilir
+    @Column(length = 1000)
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private EventCategory category; // Destek veya Kutlama
+    private LocalDateTime dateTime;
 
-    @Column(nullable = false)
-    private String subType; // Alt Tip: "Moral Ziyareti", "Doğum Günü" vb.
+    private String city;
+    private String address;
 
-    @Column(nullable = false)
-    private LocalDateTime dateTime; // Etkinlik ne zaman?
+    private int quota;
 
-    @Column(nullable = false)
-    private String city; // Hangi şehirde?
-
-    @Column(nullable = false)
-    private String address; // Açık adres
-
-    @Column(nullable = false)
-    private int quota; // Kaç gönüllü lazım?
+    // 🔥 DEĞİŞİKLİK BURADA: 'boolean' yerine 'Boolean' yaptık.
+    // Artık NULL gelirse hata vermez, kabul eder.
+    @Column(name = "show_phone_number")
+    private Boolean showPhoneNumber = false;
 
     @Enumerated(EnumType.STRING)
-    private EventStatus status; // Şu anki durumu
+    private EventCategory category;
 
-    // İLİŞKİ: Bir etkinliği bir 'Requester' (Talep Eden) oluşturur
+    private String subType;
+
+    @Enumerated(EnumType.STRING)
+    private EventStatus status = EventStatus.PENDING;
+
     @ManyToOne
-    @JoinColumn(name = "requester_id", nullable = false)
+    @JoinColumn(name = "requester_id")
     private Requester requester;
 
-    @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
-
-    // Etkinlik ilk oluştuğunda otomatik çalışır
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        // Varsayılan olarak admin onayı beklesin
-        if (this.status == null) {
-            this.status = EventStatus.PENDING;
-        }
-    }
 }

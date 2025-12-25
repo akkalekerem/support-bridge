@@ -18,58 +18,82 @@ public class AppointmentService {
     private final EventRepository eventRepository;
     private final VolunteerRepository volunteerRepository;
 
+    // 🔥 YENİ: Bildirim Servisini Bağladık
+    private final NotificationService notificationService;
+
     // 1. BAŞVURU OLUŞTUR
     public void createAppointment(CreateAppointmentRequest request) {
-        // A. Etkinlik Var mı?
         Event event = eventRepository.findById(request.getEventId())
                 .orElseThrow(() -> new RuntimeException("Etkinlik bulunamadı!"));
 
-        // B. Gönüllü Var mı?
         Volunteer volunteer = volunteerRepository.findById(request.getVolunteerId())
                 .orElseThrow(() -> new RuntimeException("Gönüllü bulunamadı!"));
 
-        // C. KONTROL: Etkinlik onaylı mı? (Senin eklediğin harika kontrol ⭐)
         if (event.getStatus() != EventStatus.APPROVED) {
             throw new RuntimeException("Bu etkinlik henüz onaylanmamış veya aktif değil!");
         }
 
-        // D. KONTROL: Zaten başvurmuş mu? (Benim eklediğim güvenlik önlemi 🛡️)
-        boolean alreadyApplied = appointmentRepository.findAll().stream()
-                .anyMatch(a -> a.getEvent().getId().equals(event.getId()) &&
-                        a.getVolunteer().getId().equals(volunteer.getId()));
+        boolean alreadyApplied = appointmentRepository.findByVolunteerId(volunteer.getId()).stream()
+                .anyMatch(a -> a.getEvent().getId().equals(event.getId()));
 
         if (alreadyApplied) {
             throw new RuntimeException("Bu etkinliğe zaten başvurdunuz. Sonuç bekleyiniz.");
         }
 
-        // E. Kayıt
+        long approvedCount = appointmentRepository.findByEventId(event.getId()).stream()
+                .filter(a -> a.getStatus() == AppointmentStatus.APPROVED)
+                .count();
+
+        if (event.getQuota() <= approvedCount) {
+            throw new RuntimeException("Üzgünüz, bu etkinliğin kontenjanı dolmuştur! 😔");
+        }
+
         Appointment appointment = new Appointment();
         appointment.setEvent(event);
         appointment.setVolunteer(volunteer);
         appointment.setStatus(AppointmentStatus.PENDING);
 
-        // createdAt ve appliedAt @PrePersist ile otomatik dolacak
-
         appointmentRepository.save(appointment);
+
+        // 🔥 BİLDİRİM: Talep Edene Haber Ver
+        String message = "Yeni Başvuru! " + volunteer.getFirstName() + " " + volunteer.getLastName() +
+                ", '" + event.getTitle() + "' etkinliğinize katılmak istiyor. 🙋‍♂️";
+        notificationService.sendNotification(event.getRequester().getId(), message, "INFO");
     }
 
-    // 2. ETKİNLİĞE GELEN BAŞVURULARI LİSTELE
+    // 2. LİSTELEME METOTLARI
     public List<Appointment> getRequestsForEvent(Long eventId) {
         return appointmentRepository.findByEventId(eventId);
     }
 
-    // 3. GÖNÜLLÜNÜN BAŞVURULARINI LİSTELE
     public List<Appointment> getAppointmentsForVolunteer(Long volunteerId) {
         return appointmentRepository.findByVolunteerId(volunteerId);
     }
 
-    // 4. BAŞVURUYA CEVAP VER (Hem Onay Hem Ret İçin Ortak Metot)
-    // Controller'da yazdığımız 'approve' ve 'reject' metodları bunu kullanacak.
+    // 3. BAŞVURUYA CEVAP VER (BİLDİRİMLİ 🔔)
     public void respondToAppointment(Long appointmentId, AppointmentStatus status) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Başvuru bulunamadı!"));
 
+        if (status == AppointmentStatus.APPROVED) {
+            long approvedCount = appointmentRepository.findByEventId(appointment.getEvent().getId()).stream()
+                    .filter(a -> a.getStatus() == AppointmentStatus.APPROVED)
+                    .count();
+            if (appointment.getEvent().getQuota() <= approvedCount) {
+                throw new RuntimeException("Kontenjan doldu, daha fazla kişi onaylanamaz!");
+            }
+        }
+
         appointment.setStatus(status);
         appointmentRepository.save(appointment);
+
+        // 🔥 BİLDİRİM: Gönüllüye Sonucu Bildir
+        String message = status == AppointmentStatus.APPROVED
+                ? "Tebrikler! '" + appointment.getEvent().getTitle() + "' etkinliği için başvurunuz ONAYLANDI! 🎒"
+                : "Üzgünüz, '" + appointment.getEvent().getTitle() + "' etkinliği için başvurunuz reddedildi.";
+
+        String type = status == AppointmentStatus.APPROVED ? "SUCCESS" : "WARNING";
+
+        notificationService.sendNotification(appointment.getVolunteer().getId(), message, type);
     }
 }

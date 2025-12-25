@@ -1,125 +1,115 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
-export default function AdminPanel({ user }) {
-    const [pendingEvents, setPendingEvents] = useState([])
-    const [loading, setLoading] = useState(true)
+export default function AdminPanel() {
+    const [events, setEvents] = useState([])
 
-    // Sayfa açılınca bekleyenleri çek
     useEffect(() => {
         fetchPendingEvents()
     }, [])
 
+    // ARTIK DİREKT BEKLEYENLERİ ÇEKİYORUZ (Yeni Controller'dan)
     const fetchPendingEvents = async () => {
         try {
             const response = await axios.get('http://localhost:8080/api/admin/events/pending')
-            setPendingEvents(response.data)
-            setLoading(false)
+            setEvents(response.data)
         } catch (error) {
-            console.error("Veri çekilemedi", error)
-            setLoading(false)
+            console.error("Veriler çekilemedi", error)
         }
     }
 
-    // Onaylama / Reddetme İşlemi
-    const handleDecision = async (eventId, decision) => {
+    const handleApprove = async (id) => {
+        if(!window.confirm("Bu etkinliği yayınlamak istiyor musun?")) return;
         try {
-            await axios.put(`http://localhost:8080/api/admin/events/${eventId}/${decision}`)
-            alert(`İşlem Başarılı: Etkinlik ${decision === 'approve' ? 'Onaylandı' : 'Reddedildi'} ✅`)
+            // Yeni Admin Endpoint'i
+            await axios.put(`http://localhost:8080/api/admin/events/${id}/approve`)
+            alert("Etkinlik onaylandı ve yayına alındı! ✅")
             fetchPendingEvents() // Listeyi yenile
         } catch (error) {
-            alert("İşlem sırasında hata oluştu.")
+            alert("Hata oluştu: " + (error.response?.data || "Bilinmiyor"))
         }
     }
 
-    // --- AYNI GÖRSEL MANTIĞI (Tutarlılık İçin) ---
-    const getCategoryImage = (category) => {
-        if (category === 'CELEBRATION') {
-            return 'https://images.unsplash.com/photo-1533294160622-d5fece3e080d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+    const handleDelete = async (id) => {
+        if(!window.confirm("Bu etkinliği reddetmek istiyor musun?")) return;
+        try {
+            // Yeni Admin Endpoint'i
+            await axios.put(`http://localhost:8080/api/admin/events/${id}/reject`)
+            alert("Etkinlik reddedildi. ❌")
+            fetchPendingEvents() // Listeyi yenile
+        } catch (error) {
+            alert("Hata oluştu")
         }
-        return 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
     }
 
-    const handleImageError = (e) => {
-        e.target.onerror = null;
-        e.target.src = "https://placehold.co/600x400/orange/white?text=Admin+Panel";
+    const getPdfUrl = (path) => {
+        if (!path) return "#";
+        const cleanPath = path.replace(/\\/g, '/');
+        return `http://localhost:8080/${cleanPath}`;
     }
-
-    if (loading) return (
-        <div className="d-flex justify-content-center my-5">
-            <div className="spinner-border text-primary" role="status"></div>
-        </div>
-    )
 
     return (
-        <div className="container">
-            {/* BAŞLIK ALANI */}
-            <div className="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
-                <div>
-                    <h3 className="fw-bold text-dark mb-0">🛡️ Yönetici Kontrol Merkezi</h3>
-                    <p className="text-muted mb-0">Onay bekleyen etkinlikleri buradan yönetebilirsiniz.</p>
-                </div>
-                <span className="badge bg-primary rounded-pill px-3 py-2 fs-6">
-          Bekleyen: {pendingEvents.length}
+        <div className="container mt-4">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2>🛡️ Admin Yönetim Paneli</h2>
+                <span className="badge bg-warning text-dark fs-6">
+            Bekleyen Onay: {events.length}
         </span>
             </div>
 
-            {pendingEvents.length === 0 ? (
-                // BOŞ DURUM (HER ŞEY YOLUNDA)
-                <div className="text-center p-5 bg-white rounded shadow-sm border">
-                    <div className="display-1 mb-3">🎉</div>
-                    <h4 className="fw-bold text-success">Harika! Bekleyen İş Yok.</h4>
-                    <p className="text-muted">Tüm etkinlikler incelendi, şu an sistem güncel.</p>
+            {events.length === 0 ? (
+                <div className="alert alert-success text-center p-5">
+                    <h4>Harika! 🎉</h4>
+                    <p>Şu an onay bekleyen yeni bir etkinlik yok.</p>
                 </div>
             ) : (
-                // KART LİSTESİ
                 <div className="row g-4">
-                    {pendingEvents.map(event => (
-                        <div key={event.id} className="col-md-6 col-lg-4">
-                            <div className="card h-100 shadow-sm border-0 hover-shadow transition-all">
-
-                                {/* GÖRSEL ALANI */}
-                                <div className="position-relative" style={{ height: '180px' }}>
-                                    <img
-                                        src={getCategoryImage(event.category)}
-                                        className="w-100 h-100"
-                                        style={{ objectFit: 'cover' }}
-                                        onError={handleImageError}
-                                    />
-                                    <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-25"></div> {/* Hafif Karartma */}
-                                    <span className="position-absolute top-0 end-0 m-2 badge bg-warning text-dark shadow-sm">
-                    ⏳ Onay Bekliyor
-                  </span>
+                    {events.map(event => (
+                        <div key={event.id} className="col-lg-6">
+                            <div className="card shadow border-warning border-2">
+                                <div className="card-header bg-warning bg-opacity-25 fw-bold d-flex justify-content-between">
+                                    <span>⏳ Onay Bekliyor</span>
+                                    <small>{new Date(event.createdAt || Date.now()).toLocaleDateString()}</small>
                                 </div>
-
                                 <div className="card-body">
-                                    <h5 className="card-title fw-bold text-truncate">{event.title}</h5>
-                                    <h6 className="card-subtitle mb-3 text-muted small">
-                                        Talep Eden: <span className="text-primary">{event.requester?.firstName} {event.requester?.lastName}</span>
-                                    </h6>
+                                    <h5 className="card-title fw-bold">{event.title}</h5>
+                                    <p className="card-text">{event.description}</p>
 
-                                    <p className="card-text text-muted small">
-                                        {event.description.length > 80 ? event.description.substring(0, 80) + '...' : event.description}
-                                    </p>
-
-                                    <div className="bg-light p-2 rounded small mb-3">
-                                        <div>📅 {new Date(event.dateTime).toLocaleString('tr-TR')}</div>
-                                        <div>📍 {event.city}</div>
+                                    <div className="bg-light p-3 rounded mb-3">
+                                        <div className="d-flex justify-content-between">
+                                            <strong>👤 Talep Eden:</strong>
+                                            <span>{event.requester?.firstName} {event.requester?.lastName}</span>
+                                        </div>
+                                        <div className="d-flex justify-content-between mt-1">
+                                            <strong>📄 Durum Belgesi:</strong>
+                                            {event.requester?.documentPath ? (
+                                                <a href={getPdfUrl(event.requester.documentPath)} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-danger fw-bold">
+                                                    PDF İncele 👁️
+                                                </a>
+                                            ) : (
+                                                <span className="text-muted">Yok</span>
+                                            )}
+                                        </div>
+                                        <div className="d-flex justify-content-between mt-1">
+                                            <strong>📍 Şehir:</strong>
+                                            <span>{event.city}</span>
+                                        </div>
+                                        <div className="d-flex justify-content-between mt-1">
+                                            <strong>📞 Telefon İzni:</strong>
+                                            <span>{event.showPhoneNumber ? "✅ Var" : "❌ Yok"}</span>
+                                        </div>
+                                        <div className="d-flex justify-content-between mt-1">
+                                            <strong>👥 Kontenjan:</strong>
+                                            <span>{event.quota >= 1000 ? "Sınırsız" : event.quota}</span>
+                                        </div>
                                     </div>
 
-                                    {/* AKSİYON BUTONLARI */}
                                     <div className="d-flex gap-2">
-                                        <button
-                                            onClick={() => handleDecision(event.id, 'approve')}
-                                            className="btn btn-success flex-grow-1 fw-bold shadow-sm"
-                                        >
-                                            ✔ Yayına Al
+                                        <button onClick={() => handleApprove(event.id)} className="btn btn-success flex-grow-1 fw-bold">
+                                            ✅ ONAYLA
                                         </button>
-                                        <button
-                                            onClick={() => handleDecision(event.id, 'reject')}
-                                            className="btn btn-outline-danger flex-grow-1 fw-bold"
-                                        >
-                                            ✖ Reddet
+                                        <button onClick={() => handleDelete(event.id)} className="btn btn-outline-danger flex-grow-1">
+                                            ❌ REDDET
                                         </button>
                                     </div>
                                 </div>

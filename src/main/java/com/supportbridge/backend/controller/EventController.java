@@ -1,9 +1,10 @@
 package com.supportbridge.backend.controller;
 
+import com.supportbridge.backend.dto.CreateEventRequest;
 import com.supportbridge.backend.entity.Event;
+import com.supportbridge.backend.entity.EventStatus; // 🔥 Bu import önemli
 import com.supportbridge.backend.service.EventService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,35 +12,38 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173") // Frontend erişim izni
+@CrossOrigin
 public class EventController {
 
     private final EventService eventService;
 
-    // 1. ETKİNLİK OLUŞTUR (POST)
-    // URL: http://localhost:8080/api/events?requesterId=5
-    @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestParam Long requesterId, @RequestBody Event event) {
-        return ResponseEntity.ok(eventService.createEvent(requesterId, event));
-    }
-
-    // 2. TÜM ONAYLI ETKİNLİKLERİ GETİR (Gönüllüler için)
+    // Tüm Etkinlikleri Getir (Admin ve Liste için)
     @GetMapping
-    public ResponseEntity<List<Event>> getAllApprovedEvents() {
-        return ResponseEntity.ok(eventService.getAllApprovedEvents());
+    public List<Event> getAllEvents() {
+        return eventService.getAllEvents();
     }
 
-    // 3. TALEP EDENİN KENDİ ETKİNLİKLERİNİ GETİR
-    @GetMapping("/requester/{requesterId}")
-    public ResponseEntity<List<Event>> getEventsByRequester(@PathVariable Long requesterId) {
-        return ResponseEntity.ok(eventService.getEventsByRequester(requesterId));
+    // Talep Edenin Kendi Etkinlikleri
+    @GetMapping("/requester/{id}")
+    public List<Event> getMyEvents(@PathVariable Long id) {
+        return eventService.getEventsByRequester(id);
     }
 
-    // 4. KATEGORİYE GÖRE GETİR (Opsiyonel)
-    @GetMapping("/category/{category}")
-    public ResponseEntity<List<Event>> getEventsByCategory(@PathVariable String category) {
-        // Enum dönüşümü servis içinde halledilmeli veya string olarak aranmalı
-        // Şimdilik basit tutuyoruz
-        return ResponseEntity.ok(eventService.getAllApprovedEvents());
+    // Yeni Etkinlik Ekle
+    @PostMapping
+    public Event createEvent(@RequestParam Long requesterId, @RequestBody CreateEventRequest request) {
+        return eventService.createEvent(requesterId, request);
+    }
+
+    // 🔥 DÜZELTME BURADA: approveEvent yerine updateEventStatus kullanıyoruz
+    @PutMapping("/{id}/approve")
+    public void approveEvent(@PathVariable Long id) {
+        eventService.updateEventStatus(id, EventStatus.APPROVED);
+    }
+
+    // Etkinliği Sil/Reddet (Admin)
+    @DeleteMapping("/{id}")
+    public void deleteEvent(@PathVariable Long id) {
+        eventService.deleteEvent(id);
     }
 }

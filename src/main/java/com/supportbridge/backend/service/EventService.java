@@ -1,66 +1,86 @@
 package com.supportbridge.backend.service;
 
+import com.supportbridge.backend.dto.CreateEventRequest;
 import com.supportbridge.backend.entity.Event;
 import com.supportbridge.backend.entity.EventStatus;
 import com.supportbridge.backend.entity.Requester;
-import com.supportbridge.backend.entity.User;
 import com.supportbridge.backend.repository.EventRepository;
-import com.supportbridge.backend.repository.UserRepository;
+import com.supportbridge.backend.repository.RequesterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final UserRepository userRepository;
+    private final RequesterRepository requesterRepository;
 
-    // 1. ETKİNLİK OLUŞTUR (GÜNCELLENDİ: ID ve Event alıyor)
-    public Event createEvent(Long requesterId, Event event) {
-        // Kullanıcıyı bul
-        User user = userRepository.findById(requesterId)
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
+    // 🔥 YENİ: Bildirim Servisini Bağladık
+    private final NotificationService notificationService;
 
-        // Kullanıcının rolü Requester mı? (Güvenlik kontrolü)
-        if (!(user instanceof Requester)) {
-            throw new RuntimeException("Sadece Talep Edenler etkinlik oluşturabilir!");
-        }
-
-        // İlişkiyi kur
-        event.setRequester((Requester) user);
-
-        // Varsayılan ayarlar
-        event.setCreatedAt(LocalDateTime.now());
-        event.setStatus(EventStatus.PENDING); // Admin onayı bekleyecek
-
-        return eventRepository.save(event);
+    // 1. TÜM ETKİNLİKLERİ GETİR
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
     }
 
-    // 2. ONAYLI ETKİNLİKLERİ GETİR (Gönüllüler için)
-    public List<Event> getAllApprovedEvents() {
-        return eventRepository.findByStatus(EventStatus.APPROVED);
-    }
-
-    // 3. ONAY BEKLEYENLERİ GETİR (Admin için)
-    public List<Event> getPendingEvents() {
-        return eventRepository.findByStatus(EventStatus.PENDING);
-    }
-
-    // 4. TALEP EDENİN KENDİ ETKİNLİKLERİNİ GETİR (YENİ EKLENDİ - Hatanın Çözümü)
+    // 2. TALEP EDENİN KENDİ ETKİNLİKLERİ
     public List<Event> getEventsByRequester(Long requesterId) {
         return eventRepository.findByRequesterId(requesterId);
     }
 
-    // ETKİNLİK DURUMUNU GÜNCELLE (Admin için)
+    // 3. YENİ ETKİNLİK OLUŞTUR
+    public Event createEvent(Long requesterId, CreateEventRequest request) {
+        Requester requester = requesterRepository.findById(requesterId)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        Event event = new Event();
+        event.setTitle(request.getTitle());
+        event.setDescription(request.getDescription());
+        event.setDateTime(request.getDateTime());
+        event.setCity(request.getCity());
+        event.setAddress(request.getAddress());
+        event.setCategory(request.getCategory());
+        event.setSubType(request.getSubType());
+        event.setQuota(request.getQuota());
+        event.setShowPhoneNumber(request.isShowPhoneNumber());
+
+        event.setRequester(requester);
+        event.setStatus(EventStatus.PENDING);
+
+        return eventRepository.save(event);
+    }
+
+    // 4. ETKİNLİK DURUMUNU GÜNCELLE (ONAYLA/REDDET + BİLDİRİM 🔔)
     public void updateEventStatus(Long eventId, EventStatus status) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Etkinlik bulunamadı!"));
+                .orElseThrow(() -> new RuntimeException("Etkinlik bulunamadı"));
 
         event.setStatus(status);
         eventRepository.save(event);
+
+        // 🔥 BİLDİRİM GÖNDERME KISMI
+        String message = status == EventStatus.APPROVED
+                ? "Müjde! '" + event.getTitle() + "' başlıklı etkinliğiniz onaylandı ve yayına alındı. 🎉"
+                : "Üzgünüz, '" + event.getTitle() + "' başlıklı etkinliğiniz reddedildi. 😔";
+
+        String type = status == EventStatus.APPROVED ? "SUCCESS" : "ERROR";
+
+        // Etkinliği oluşturan kişiye (Requester) gönder
+        notificationService.sendNotification(event.getRequester().getId(), message, type);
+    }
+
+    // 5. SADECE BEKLEYENLERİ GETİR
+    public List<Event> getPendingEvents() {
+        return eventRepository.findAll().stream()
+                .filter(event -> event.getStatus() == EventStatus.PENDING)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteEvent(Long eventId) {
+        eventRepository.deleteById(eventId);
     }
 }

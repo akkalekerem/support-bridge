@@ -1,13 +1,18 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-// 1. Bootstrap CSS dosyasını projeye dahil ediyoruz (Tasarım için şart)
-import 'bootstrap/dist/css/bootstrap.min.css'
-// 2. Sayfalar arası gezinme (Router) özelliğini aktif ediyoruz
 import { BrowserRouter } from 'react-router-dom'
+// 🔥 Yeni import
+import { SettingsProvider } from './context/SettingsContext'
+// Bootstrap CSS (Eğer main.jsx içindeyse kalsın, yoksa index.html'dedir)
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <BrowserRouter>
-        <App />
-    </BrowserRouter>,
+    <React.StrictMode>
+        <SettingsProvider> {/* 🔥 Uygulamayı Sarmaladık */}
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </SettingsProvider>
+    </React.StrictMode>,
 )
