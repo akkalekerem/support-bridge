@@ -19,3 +19,58 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+/* --- DARK MODE DÜZELTMELERİ 🌙 --- */
+
+/* Gece modunda "bg-white" olan yerleri koyu gri yap */
+[data-bs-theme="dark"] .bg-white {
+    background-color: #212529 !important;
+    color: #f8f9fa !important;
+}
+
+/* Gece modunda "bg-light" olan yerleri (form arkaları vb.) biraz daha açık gri yap */
+[data-bs-theme="dark"] .bg-light {
+    background-color: #343a40 !important;
+    color: #e9ecef !important;
+}
+
+/* Siyah yazıları (.text-dark) beyaza çevir */
+[data-bs-theme="dark"] .text-dark {
+    color: #f8f9fa !important;
+}
+
+/* Soluk gri yazıları (.text-muted) daha parlak gri yap ki okunsun */
+[data-bs-theme="dark"] .text-muted {
+    color: #adb5bd !important;
+}
+
+/* Kartların kenarlıklarını yumuşat */
+[data-bs-theme="dark"] .card {
+    background-color: #212529;
+    border-color: #495057;
+}
+
+/* Form kutularını (input) koyu yap */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background-color: #2b3035;
+    border-color: #495057;
+    color: #fff;
+}
+
+/* Inputların içindeki placeholder (ipucu) yazılarını düzelt */
+[data-bs-theme="dark"] ::placeholder {
+    color: #adb5bd !important;
+}
+
+/* Tablo veya liste elemanlarını düzelt */
+[data-bs-theme="dark"] .list-group-item {
+    background-color: #212529;
+    color: #fff;
+    border-color: #495057;
+}
+
+/* Modal pencerelerini (popup) koyu yap */
+[data-bs-theme="dark"] .modal-content {
+    background-color: #212529;
+    border-color: #495057;
+}
