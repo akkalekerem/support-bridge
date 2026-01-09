@@ -5,6 +5,7 @@ const SettingsContext = createContext();
 export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider = ({ children }) => {
+    // --- TEMA AYARLARI (KOYU MOD) ---
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
     useEffect(() => {
@@ -16,6 +17,7 @@ export const SettingsProvider = ({ children }) => {
         setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
     };
 
+    // --- DİL AYARLARI (TR / EN) ---
     const [lang, setLang] = useState(localStorage.getItem('lang') || 'tr');
 
     useEffect(() => {
@@ -26,9 +28,9 @@ export const SettingsProvider = ({ children }) => {
         setLang((prev) => (prev === 'tr' ? 'en' : 'tr'));
     };
 
+    // --- SÖZLÜK (TÜM ÇEVİRİLER BURADA) ---
     const translations = {
         tr: {
-            // 🔥 YENİ: KATEGORİ İSİMLERİ
             categories: {
                 support: "Destek",
                 celebration: "Kutlama"
@@ -51,6 +53,15 @@ export const SettingsProvider = ({ children }) => {
                 tabEvents: "Tüm Etkinlikler",
                 tabApps: "Başvurularım",
                 tabRequests: "Taleplerim"
+            },
+            profilePage: {
+                title: "Profil Bilgilerim",
+                email: "E-Posta",
+                phone: "Telefon",
+                role: "Rol",
+                btnUpdate: "Bilgileri Güncelle",
+                expLabel: "Tecrübe Notu",
+                pdfLabel: "Dosya Durumu"
             },
             home: {
                 heroTitle: "Destek Köprüsü",
@@ -143,7 +154,6 @@ export const SettingsProvider = ({ children }) => {
             }
         },
         en: {
-            // 🔥 YENİ: KATEGORİLER (İNGİLİZCE)
             categories: {
                 support: "Support",
                 celebration: "Celebration"
@@ -166,6 +176,15 @@ export const SettingsProvider = ({ children }) => {
                 tabEvents: "All Events",
                 tabApps: "My Applications",
                 tabRequests: "My Requests"
+            },
+            profilePage: {
+                title: "My Profile Info",
+                email: "Email",
+                phone: "Phone",
+                role: "Role",
+                btnUpdate: "Update Info",
+                expLabel: "Experience Note",
+                pdfLabel: "Document Status"
             },
             home: {
                 heroTitle: "Support Bridge",
