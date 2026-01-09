@@ -28,6 +28,11 @@ export const SettingsProvider = ({ children }) => {
 
     const translations = {
         tr: {
+            // 🔥 YENİ: KATEGORİ İSİMLERİ
+            categories: {
+                support: "Destek",
+                celebration: "Kutlama"
+            },
             navbar: {
                 brand: "Destek Köprüsü 🌉",
                 home: "Anasayfa",
@@ -38,7 +43,6 @@ export const SettingsProvider = ({ children }) => {
                 logout: "Çıkış",
                 welcome: "Merhaba"
             },
-            // 🔥 YENİ: DASHBOARD GENEL ALANI
             dashboard: {
                 title: "Kontrol Paneli",
                 welcomeMsg: "Hoşgeldin",
@@ -139,6 +143,11 @@ export const SettingsProvider = ({ children }) => {
             }
         },
         en: {
+            // 🔥 YENİ: KATEGORİLER (İNGİLİZCE)
+            categories: {
+                support: "Support",
+                celebration: "Celebration"
+            },
             navbar: {
                 brand: "Support Bridge 🌉",
                 home: "Home",
@@ -149,7 +158,6 @@ export const SettingsProvider = ({ children }) => {
                 logout: "Logout",
                 welcome: "Hello"
             },
-            // 🔥 NEW: DASHBOARD TRANSLATIONS
             dashboard: {
                 title: "Control Panel",
                 welcomeMsg: "Welcome",

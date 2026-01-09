@@ -124,7 +124,15 @@ export default function RequesterPanel({ user }) {
                     <form onSubmit={handleCreate}>
                         <div className="row g-3">
                             <div className="col-md-6"><input placeholder={t('requesterPanel.placeholderTitle')} className="form-control" required onChange={e => setNewEvent({...newEvent, title: e.target.value})} /></div>
-                            <div className="col-md-3"><select className="form-select" onChange={e => setNewEvent({...newEvent, category: e.target.value})}><option value="SUPPORT">Destek</option><option value="CELEBRATION">Kutlama</option></select></div>
+
+                            {/* 🔥 DÜZELTME BURADA: SELECT İÇİNDEKİ YAZILAR ÇEVRİLDİ */}
+                            <div className="col-md-3">
+                                <select className="form-select" onChange={e => setNewEvent({...newEvent, category: e.target.value})}>
+                                    <option value="SUPPORT">{t('categories.support')}</option>
+                                    <option value="CELEBRATION">{t('categories.celebration')}</option>
+                                </select>
+                            </div>
+
                             <div className="col-md-3"><input placeholder={t('requesterPanel.placeholderType')} className="form-control" required onChange={e => setNewEvent({...newEvent, subType: e.target.value})} /></div>
                             <div className="col-12"><textarea placeholder={t('requesterPanel.placeholderDesc')} className="form-control" required onChange={e => setNewEvent({...newEvent, description: e.target.value})} /></div>
 
